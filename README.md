@@ -1,4 +1,4 @@
-Tested Public Methods
+Tested Public Methods [![Build Status](https://travis-ci.org/tbprojects/tested_public_methods.png)](https://travis-ci.org/tbprojects/tested_public_methods) [![Code Climate](https://codeclimate.com/github/tbprojects/tested_public_methods.png)](https://codeclimate.com/github/tbprojects/tested_public_methods)
 =================
 
 Returns list of public methods that do not have their own unit tests.
