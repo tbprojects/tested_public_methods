@@ -1,0 +1,7 @@
+.idea/
+*.log
+*.swp
+*.gem
+Gemfile.lock
+.rvmrc
+test/debug.log
