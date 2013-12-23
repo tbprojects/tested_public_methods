@@ -27,6 +27,12 @@ Example of an output:
 Found 5 issues
 ```
 
+## Configuration
+
+Sometimes you may need to skip some classes or methods during analysis. In order to do that
+generate initializer with ```rails generate initializer tested_public_methods``` and fill
+configuration (config.skip_classes and config.skip_methods) according to the example.
+
 ## Tests
 Module is tested with rspec. To run it just execute ```rake```
 

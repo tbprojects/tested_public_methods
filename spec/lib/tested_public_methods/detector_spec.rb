@@ -26,18 +26,36 @@ describe TestedPublicMethods::Detector do
   end
 
   describe '#untested_instance_methods' do
-    { Project => [:formatted_start_at],
-      Task => [:project_name],
-      ProjectsController => [:index]}.each do |klass, methods|
-      it { expect(subject.send(:untested_instance_methods, klass)).to match_array methods}
+    context 'without custom config' do
+      { Project => [:formatted_start_at],
+        Task => [:project_name],
+        ProjectsController => [:index]}.each do |klass, methods|
+        it { expect(subject.send(:untested_instance_methods, klass)).to match_array methods}
+      end
+    end
+
+    context 'with custom config' do
+      before { TestedPublicMethods.stub(:configuration).
+               and_return(OpenStruct.new(skip_methods: {Project => [:formatted_start_at]})) }
+
+      it { expect(subject.send(:untested_instance_methods, Project)).to match_array []}
     end
   end
 
   describe '#untested_class_methods' do
-    { Project => [],
-      Task => [:with_description],
-      ProjectsController => []}.each do |klass, methods|
-      it { expect(subject.send(:untested_class_methods, klass)).to match_array methods}
+    context 'without custom config' do
+      { Project => [],
+        Task => [:with_description],
+        ProjectsController => []}.each do |klass, methods|
+        it { expect(subject.send(:untested_class_methods, klass)).to match_array methods}
+      end
+    end
+
+    context 'with custom config' do
+      before { TestedPublicMethods.stub(:configuration).
+          and_return(OpenStruct.new(skip_methods: {Task => [:with_description]})) }
+
+      it { expect(subject.send(:untested_class_methods, Task)).to match_array []}
     end
   end
 

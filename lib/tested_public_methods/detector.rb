@@ -14,7 +14,7 @@ class TestedPublicMethods::Detector
         untested_class_methods(klass).each do |method_name|
           buffer_warning("* missing test for #{klass.name}.#{method_name}", :missing_test)
         end
-      else
+      elsif !class_skipped? klass
         buffer_warning("* missing spec file for #{klass.name}", :missing_spec)
       end
     end
@@ -49,6 +49,10 @@ class TestedPublicMethods::Detector
     File.exists?(spec_file_path(klass))
   end
 
+  def class_skipped?(klass)
+    config_skip_classes.include? klass.to_s
+  end
+
   def source_file_path(klass)
     list_of_classes[klass]
   end
@@ -71,11 +75,15 @@ class TestedPublicMethods::Detector
   end
 
   def untested_instance_methods(klass)
-    instance_methods_in_class(klass) - instance_methods_in_spec(klass)
+    instance_methods_in_class(klass) - instance_methods_in_spec(klass) - skipped_methods(klass)
   end
 
   def untested_class_methods(klass)
-    class_methods_in_class(klass) - class_methods_in_spec(klass)
+    class_methods_in_class(klass) - class_methods_in_spec(klass) - skipped_methods(klass)
+  end
+
+  def skipped_methods(klass)
+    (config_skip_methods[klass.to_s] || []).map(&:to_sym)
   end
 
   def instance_methods_in_class(klass)
@@ -96,5 +104,13 @@ class TestedPublicMethods::Detector
 
   def class_methods_in_spec(klass)
     File.read(spec_file_path(klass)).scan(CLASS_METHOD_REG_EXP).flatten.map(&:to_sym)
+  end
+
+  def config_skip_methods
+    TestedPublicMethods.configuration.skip_methods.stringify_keys
+  end
+
+  def config_skip_classes
+    TestedPublicMethods.configuration.skip_classes.map(&:to_s)
   end
 end
