@@ -14,7 +14,7 @@ or
 
 ## Usage & Example
 
-Execute ```TestedPublicMethods::Detector.new.analyze``` to list all untested methods or classes.
+Execute ```rake tested_public_methods:analyze``` to list all untested methods or classes.
 
 Example of an output:
 ```

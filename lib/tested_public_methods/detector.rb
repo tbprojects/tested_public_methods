@@ -1,6 +1,4 @@
 class TestedPublicMethods::Detector
-  SOURCE_DIR = File.join(Rails.root, 'app')
-  SPEC_DIR   = File.join(Rails.root, 'spec')
   CLASS_NAME_REG_EXP = /^[\s]*class[\s]+([\S]+)[\s]+/
   CLASS_METHOD_REG_EXP = /['"]\.([\S]+)['"]/
   INSTANCE_METHOD_REG_EXP = /['"](?:POST|GET|DELETE|PUT|)*[\s]*#([\S]+)['"]/
@@ -24,15 +22,27 @@ class TestedPublicMethods::Detector
   end
 
   private
+  def source_dir
+    File.join(Rails.root, 'app')
+  end
+
+  def spec_dir
+    File.join(Rails.root, 'spec')
+  end
+
   def buffer_warning(text, type)
     @buffer[type].push(text)
     @problem_counter += 1
   end
 
   def print_summary
-    puts @buffer[:missing_spec].join("\n")
-    puts @buffer[:missing_test].join("\n")
-    puts "\nFound #{@problem_counter} issues" if @problem_counter > 0
+    puts @buffer[:missing_spec].join("\n").red
+    puts @buffer[:missing_test].join("\n").red
+    if @problem_counter > 0
+      puts "\nFound #{@problem_counter} issues".red
+    else
+      puts "\nGreat, all public methods are tested!".green
+    end
   end
 
   def has_spec_file?(klass)
@@ -44,17 +54,17 @@ class TestedPublicMethods::Detector
   end
 
   def spec_file_path(klass)
-    source_file_path(klass).gsub(SOURCE_DIR, SPEC_DIR).gsub('.rb', '_spec.rb')
+    source_file_path(klass).gsub(source_dir, spec_dir).gsub('.rb', '_spec.rb')
   end
 
   def list_of_classes
-    @list_of_classes ||= Dir.glob(File.join(SOURCE_DIR, "**/*.rb")).each_with_object({}) do |file_path, memo|
+    @list_of_classes ||= Dir.glob(File.join(source_dir, "**/*.rb")).each_with_object({}) do |file_path, memo|
       klass_names = File.read(file_path).scan(CLASS_NAME_REG_EXP).flatten
       klass_names.each do |klass_name|
         begin
           memo[klass_name.constantize] = file_path
         rescue
-          puts("WARNING: can't analyze unsupported class #{klass_name} in #{file_path}")
+          puts "WARNING: can't analyze unsupported class #{klass_name} in #{file_path}".yellow
         end
       end
     end

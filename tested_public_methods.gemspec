@@ -20,5 +20,7 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'rake'
   gem.add_development_dependency 'rspec-rails'
   gem.add_development_dependency 'sqlite3'
+  gem.add_development_dependency 'colorize'
   gem.add_dependency 'activerecord'
+  gem.add_dependency 'colorize'
 end
